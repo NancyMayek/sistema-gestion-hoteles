@@ -1,0 +1,28 @@
+# IDE
+.metadata/
+.idea/
+*.iws
+*.iml
+*.ipr
+.classpath
+.project
+.settings/
+bin/
+
+# Build
+target/
+build/
+*.jar
+*.war
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+*.properties
