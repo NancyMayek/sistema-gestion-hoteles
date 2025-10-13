@@ -46,8 +46,8 @@ public class Reserva {
 
 	@NotNull(message = "Su total prro, vuelva pronto")
     @Column(name = "total", precision = 10, scale = 2)
-    private BigDecimal total;
-
+    private Double total;
+ 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoReserva estado = EstadoReserva.CONFIRMADA;
