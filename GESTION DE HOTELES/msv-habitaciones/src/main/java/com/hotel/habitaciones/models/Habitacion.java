@@ -36,7 +36,7 @@ public class Habitacion {
 	private Short numero;
 	
 	//Obligatorio
-	@NotNull(message="La capacidad de la habitacion es requerida")
+	@NotNull(message="El tipo de la habitacion es requerida")
 	@Column(name= "TIPO", nullable = false)
 	private String tipo;
 	
