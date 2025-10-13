@@ -32,5 +32,5 @@ public record HabitacionRequest(
 		Short capacidad,
 		
 		@Positive(message="La categoria debe ser positiva")
-		String idEstado
+		Long idEstado
 ) {}

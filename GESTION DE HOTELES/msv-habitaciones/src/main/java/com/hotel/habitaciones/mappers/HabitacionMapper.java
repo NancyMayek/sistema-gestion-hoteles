@@ -1,10 +1,16 @@
 package com.hotel.habitaciones.mappers;
 
+import org.springframework.stereotype.Component;
+
 import com.hotel.commons.dto.HabitacionRequest;
 import com.hotel.commons.dto.HabitacionResponse;
 import com.hotel.commons.mappers.CommonMapper;
 import com.hotel.habitaciones.models.Habitacion;
 
+import lombok.AllArgsConstructor;
+
+@Component
+@AllArgsConstructor 
 public class HabitacionMapper extends CommonMapper<HabitacionRequest,HabitacionResponse, Habitacion>{
 
 	@Override

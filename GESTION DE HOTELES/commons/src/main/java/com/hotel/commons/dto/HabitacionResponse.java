@@ -7,6 +7,6 @@ public record HabitacionResponse(
 	String descripcion,		
 	Double precio,		
 	Short capacidad,	
-	String idEstado
+	Long idEstado
 	)
 {}

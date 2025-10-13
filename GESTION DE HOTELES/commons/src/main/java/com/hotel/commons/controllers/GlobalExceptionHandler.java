@@ -30,6 +30,13 @@ public class GlobalExceptionHandler {
 				.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Violacion de restriccion:" +  e.getMessage()));
 	}
 	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+	    log.warn("Error de argumento ilegal: {}", e.getMessage());
+	    return ResponseEntity.badRequest()
+	            .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+	}
+	
 	@ExceptionHandler(MethodArgumentNotValidException.class)//VALIDAR LOS DTO NOT NULL NOT BLACK CAEN AQUI
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String mensaje = e.getBindingResult().getFieldErrors().stream()

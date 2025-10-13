@@ -36,7 +36,8 @@ public class Habitacion {
 	private Short numero;
 	
 	//Obligatorio
-	@NotNull(message="El tipo de la habitacion es requerida")
+	@NotBlank(message = "El tipo de habitacion es requerida ")
+	@NotNull(message="El tipo de  habitacion es requerida")
 	@Column(name= "TIPO", nullable = false)
 	private String tipo;
 	
@@ -58,6 +59,6 @@ public class Habitacion {
 	
 	@Positive(message="La categoria debe ser positiva")
 	@Column(name = "ID_ESTADO")
-	private String idEstado;
+	private Long idEstado;
 }
 
