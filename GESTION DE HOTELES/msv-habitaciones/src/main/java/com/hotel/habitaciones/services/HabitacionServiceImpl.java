@@ -9,7 +9,7 @@ import com.hotel.commons.dto.HabitacionRequest;
 import com.hotel.commons.dto.HabitacionResponse;
 import com.hotel.habitaciones.mappers.HabitacionMapper;
 import com.hotel.habitaciones.models.Habitacion;
-import com.hotel.habitaciones.repositoriea.HabitacionRepository;
+import com.hotel.habitaciones.repositories.HabitacionRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
