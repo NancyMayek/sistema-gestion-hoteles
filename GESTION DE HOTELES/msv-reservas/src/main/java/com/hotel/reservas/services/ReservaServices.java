@@ -1,5 +1,9 @@
 package com.hotel.reservas.services;
 
-public class ReservaServices {
+import com.hotel.commons.dto.ReservaRequest;
+import com.hotel.commons.dto.ReservaResponse;
+import com.hotel.commons.services.CommonService;
+
+public interface ReservaServices extends CommonService<ReservaRequest, ReservaResponse> {
 
 }
