@@ -1,4 +1,4 @@
-package com.guillermo.huespedes.services;
+package com.hotel.huespedes.services;
 
 import com.hotel.commons.dto.HuespedRequest;
 import com.hotel.commons.dto.HuespedResponse;
