@@ -2,6 +2,7 @@ package com.hotel.commons.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -22,13 +23,12 @@ public record HuespedRequest (
 	    @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe tener exactamente 10 dígitos.")
 	    String telefono,
 
-	    @NotBlank(message = "El documento es obligatorio.")
-	    @Pattern(regexp = "^(INE|Pasaporte)$", message = "El documento debe ser 'INE' o 'Pasaporte'.")
+	    @NotNull(message = "El documento es obligatorio.")
 	    Long idDocumento,
 
 	    @NotBlank(message = "La nacionalidad es obligatoria.")
 	    @Size(max = 50, message = "La nacionalidad no debe exceder los 50 caracteres.")
 	    String nacionalidad
 )
-{	
-}
+
+{}
