@@ -3,7 +3,7 @@ package com.hotel.commons.dto;
 public record HabitacionResponse(
 	Long id,
 	Short numero,
-	String tipo,	
+	Long idTipo,	
 	String descripcion,		
 	Double precio,		
 	Short capacidad,	

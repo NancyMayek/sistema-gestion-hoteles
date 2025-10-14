@@ -15,7 +15,7 @@ public record HabitacionRequest(
 		
 		//Obligatorio
 		@NotNull(message="El tipo de la habitacion es requerida")
-		String tipo,
+		Long idtipo,
 		
 		@NotBlank(message = "La descripcion es requerida")
 		@Size(min = 1, max = 50, message = "La descripción debe tener entre 1 y 50 caracteres")
