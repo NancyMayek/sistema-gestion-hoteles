@@ -159,6 +159,306 @@ END INSERTAR_HUESPED;
 
 
 
+
+CREATE OR REPLACE PROCEDURE INSERTAR_HABITACION (
+    P_NUMERO        IN NUMBER,
+    P_TIPO          IN VARCHAR2,
+    P_DESCRIPCION   IN VARCHAR2,
+    P_PRECIO        IN NUMBER,
+    P_CAPACIDAD     IN NUMBER,
+    P_ESTADO        IN NUMBER,
+    P_ID_HABITACION OUT NUMBER,
+    P_RESULTADO     OUT VARCHAR2,
+    P_ERROR         OUT VARCHAR2
+) IS
+    V_COUNT NUMBER;
+    V_ESTADO_VALIDO NUMBER;
+BEGIN
+
+
+    P_RESULTADO := NULL;
+    P_ERROR := NULL;
+    
+    
+    IF P_NUMERO IS NULL OR P_TIPO IS NULL OR P_DESCRIPCION IS NULL OR 
+       P_PRECIO IS NULL OR P_CAPACIDAD IS NULL OR P_ESTADO IS NULL THEN
+        P_ERROR := 'Todos los campos son obligatorios y no pueden estar vacíos';
+        RETURN;
+    END IF;
+    
+    
+    IF P_NUMERO <= 0 THEN
+        P_ERROR := 'El número de habitación debe ser mayor a 0';
+        RETURN;
+    END IF;
+    
+    
+    SELECT COUNT(*) INTO V_COUNT FROM HABITACIONES WHERE NUMERO = P_NUMERO;
+    IF V_COUNT > 0 THEN
+        P_ERROR := 'El número de habitación ya existe en el sistema';
+        RETURN;
+    END IF;
+    
+    
+    IF TRIM(P_TIPO) IS NULL THEN
+        P_ERROR := 'El tipo de habitación no puede estar vacío';
+        RETURN;
+    END IF;
+    
+    
+    IF P_PRECIO <= 0 THEN
+        P_ERROR := 'El precio debe ser mayor a 0';
+        RETURN;
+    END IF;
+    
+    
+    IF P_CAPACIDAD < 1 THEN
+        P_ERROR := 'La capacidad debe ser al menos 1';
+        RETURN;
+    END IF;
+    
+    SELECT COUNT(*) INTO V_ESTADO_VALIDO 
+    FROM ESTADO_HABITACION 
+    WHERE ID_ESTADO_H = P_ESTADO;
+    
+    IF V_ESTADO_VALIDO = 0 THEN
+        P_ERROR := 'El estado seleccionado no es válido';
+        RETURN;
+    END IF;
+    
+    
+    
+    
+    
+    
+    INSERT INTO HABITACIONES (
+        NUMERO, TIPO, DESCRIPCION, PRECIO, CAPACIDAD, ESTADO
+    ) VALUES (
+        P_NUMERO, P_TIPO, P_DESCRIPCION, P_PRECIO, P_CAPACIDAD, P_ESTADO
+    ) RETURNING ID_HABITACION INTO P_ID_HABITACION;
+    
+    COMMIT;
+    P_RESULTADO := 'Habitación registrada exitosamente. ID: ' || P_ID_HABITACION;
+    
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        ROLLBACK;
+        P_ERROR := 'Error: El número de habitación ya existe en el sistema';
+    WHEN OTHERS THEN
+        ROLLBACK;
+        P_ERROR := 'Error inesperado: ' || SQLERRM;
+END INSERTAR_HABITACION;
+
+-----------------------------------------------------------------------------------------
+
+
+
+CREATE OR REPLACE PROCEDURE INSERTAR_RESERVA (
+    P_ID_HUESPED      IN NUMBER,
+    P_ID_HABITACION   IN NUMBER,
+    P_FECHA_ENTRADA   IN DATE,
+    P_FECHA_SALIDA    IN DATE,
+    P_ID_RESERVA      OUT NUMBER,
+    P_NOCHES          OUT NUMBER,
+    P_TOTAL           OUT NUMBER,
+    P_RESULTADO       OUT NUMBER,
+    P_ERROR           OUT VARCHAR
+) IS
+    V_PRECIO_HABITACION NUMBER;
+    V_CAPACIDAD_HABITACION NUMBER;
+    V_ESTADO_HABITACION NUMBER;
+    V_EXISTE_HUESPED NUMBER;
+    V_EXISTE_HABITACION NUMBER;
+    V_RESERVAS_CONFLICTO NUMBER;
+    V_ESTADO_DISPONIBLE NUMBER;
+    V_DIAS NUMBER;
+BEGIN
+
+    P_RESULTADO := NULL;
+    P_ERROR := NULL;
+    
+    
+    IF P_ID_HUESPED IS NULL OR P_ID_HABITACION IS NULL OR 
+       P_FECHA_ENTRADA IS NULL OR P_FECHA_SALIDA IS NULL THEN
+        P_ERROR := 'Todos los campos son obligatorios';
+        RETURN;
+    END IF;
+    
+   
+    IF P_FECHA_ENTRADA >= P_FECHA_SALIDA THEN
+        P_ERROR := 'La fecha de entrada debe ser anterior a la fecha de salida';
+        RETURN;
+    END IF;
+    
+   
+    IF P_FECHA_ENTRADA < TRUNC(SYSDATE) THEN
+        P_ERROR := 'La fecha de entrada no puede ser en el pasado';
+        RETURN;
+    END IF;
+    
+   
+    SELECT COUNT(*) INTO V_EXISTE_HUESPED 
+    FROM HUESPEDES 
+    WHERE ID_HUESPED = P_ID_HUESPED;
+    
+    IF V_EXISTE_HUESPED = 0 THEN
+        P_ERROR := 'El huésped no existe en el sistema';
+        RETURN;
+    END IF;
+    
+   
+    SELECT COUNT(*), PRECIO, CAPACIDAD, ESTADO 
+    INTO V_EXISTE_HABITACION, V_PRECIO_HABITACION, V_CAPACIDAD_HABITACION, V_ESTADO_HABITACION
+    FROM HABITACIONES 
+    WHERE ID_HABITACION = P_ID_HABITACION;
+    
+    IF V_EXISTE_HABITACION = 0 THEN
+        P_ERROR := 'La habitación no existe en el sistema';
+        RETURN;
+    END IF;
+    
+   
+    SELECT ID_ESTADO_H INTO V_ESTADO_DISPONIBLE 
+    FROM ESTADO_HABITACION 
+    WHERE UPPER(DESCRIPCION) = 'DISPONIBLE';
+    
+
+    IF V_ESTADO_HABITACION != V_ESTADO_DISPONIBLE THEN
+        P_ERROR := 'La habitación no está disponible para reservar';
+        RETURN;
+    END IF;
+    
+   
+    SELECT COUNT(*) INTO V_RESERVAS_CONFLICTO
+    FROM RESERVAS R
+    INNER JOIN ESTADO_RESERVAS ER ON R.ESTADO = ER.ID_ESTADO_R
+    WHERE R.ID_HABITACION = P_ID_HABITACION
+      AND ER.DESCRIPCION IN ('Confirmada', 'En curso')
+      AND (P_FECHA_ENTRADA BETWEEN R.FECHA_ENTRADA AND R.FECHA_SALIDA - 1
+        OR P_FECHA_SALIDA BETWEEN R.FECHA_ENTRADA + 1 AND R.FECHA_SALIDA
+        OR R.FECHA_ENTRADA BETWEEN P_FECHA_ENTRADA AND P_FECHA_SALIDA - 1);
+    
+    IF V_RESERVAS_CONFLICTO > 0 THEN
+        P_ERROR := 'La habitación no está disponible en las fechas seleccionadas';
+        RETURN;
+    END IF;
+    
+   
+    V_DIAS := P_FECHA_SALIDA - P_FECHA_ENTRADA;
+    IF V_DIAS < 1 THEN
+        V_DIAS := 1;
+    END IF;
+    
+    P_NOCHES := V_DIAS;
+    
+ 
+    P_TOTAL := V_PRECIO_HABITACION * P_NOCHES;
+    
+    DECLARE
+        V_ESTADO_CONFIRMADA NUMBER;
+    BEGIN
+        SELECT ID_ESTADO_R INTO V_ESTADO_CONFIRMADA
+        FROM ESTADO_RESERVAS 
+        WHERE UPPER(DESCRIPCION) = 'CONFIRMADA';
+        
+        
+        INSERT INTO RESERVAS (
+            ID_HUESPED, ID_HABITACION, FECHA_ENTRADA, FECHA_SALIDA, 
+            NOCHES, TOTAL, ESTADO
+        ) VALUES (
+            P_ID_HUESPED, P_ID_HABITACION, P_FECHA_ENTRADA, P_FECHA_SALIDA,
+            P_NOCHES, P_TOTAL, V_ESTADO_CONFIRMADA
+        ) RETURNING ID_RESERVA INTO P_ID_RESERVA;
+        
+        UPDATE HABITACIONES 
+        SET ESTADO = (SELECT ID_ESTADO_H FROM ESTADO_HABITACION WHERE UPPER(DESCRIPCION) = 'OCUPADA')
+        WHERE ID_HABITACION = P_ID_HABITACION;
+        
+        COMMIT;
+        P_RESULTADO := 'Reserva creada exitosamente. Total: $' || P_TOTAL || ' por ' || P_NOCHES || ' noches';
+        
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            P_ERROR := 'Estado de reserva "Confirmada" no configurado en el sistema';
+            RETURN;
+    END;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        P_ERROR := 'Error inesperado al crear reserva: ' || SQLERRM;
+END INSERTAR_RESERVA;
+
+
+
+
+------------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE PROCEDURE ELIMINA_HABITACION(P_ID_HABITACION IN NUMBER)
+IS
+    V_EXISTE NUMBER;
+BEGIN
+     SELECT COUNT(*) INTO V_EXISTE FROM HABITACIONES WHERE ID_HABITACION = P_ID_HABITACION;
+    IF(V_EXISTE = 0)THEN
+        RAISE_APPLICATION_ERROR(-20100,'LA HABITACION NO EXISTE');
+        ELSE
+        DELETE FROM HABITACIONES WHERE ID_HABITACION = P_ID_HABITACION;
+         DBMS_OUTPUT.PUT_LINE('HABITACION ELIMINADA CORRECTAMENTE'); 
+        COMMIT;
+        END IF;
+        EXCEPTION
+        WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20300, 'ERROR AL ELIMINAR HABITACION' || SQLERRM);
+        END;
+        
+  
+-------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE ELIMINA_HUESPED(P_ID_HUESPED IN NUMBER)
+IS
+    V_EXISTE NUMBER;
+BEGIN
+     SELECT COUNT(*) INTO V_EXISTE FROM HUESPEDES WHERE ID_HUESPED= P_ID_HUESPED;
+    IF(V_EXISTE = 0)THEN
+        RAISE_APPLICATION_ERROR(-20100,'EL HUESPED NO EXISTE');
+    ELSE  
+        DELETE FROM HUESPEDES WHERE ID_HUESPED = P_ID_HUESPED;
+         DBMS_OUTPUT.PUT_LINE('HUESPED ELIMINADO CORRECTAMENTE'); 
+        COMMIT;
+        END IF;        
+        EXCEPTION
+        WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20300, 'ERROR AL ELIMINAR HUESPED' || SQLERRM);
+        END;
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+CREATE OR REPLACE PROCEDURE ELIMINA_RESERVA(P_ID_RESERVA IN NUMBER)
+IS
+    V_EXISTE NUMBER;
+BEGIN
+     SELECT COUNT(*) INTO V_EXISTE FROM RESERVAS WHERE ID_RESERVA = P_ID_RESERVA;
+    IF(V_EXISTE = 0)THEN
+        RAISE_APPLICATION_ERROR(-20100,'LA RESERVA NO EXISTE');
+   ELSE
+        DELETE FROM RESERVAS WHERE ID_RESERVA = P_ID_RESERVA;
+         DBMS_OUTPUT.PUT_LINE('RESERVA ELIMINADA CORRECTAMENTE'); 
+        COMMIT;
+        END IF;
+        EXCEPTION
+        WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20300, 'ERROR AL ELIMINAR RESERVA' || SQLERRM);
+        END;
+
+
+
+
+
+
 CREATE OR REPLACE PROCEDURE INSERTAR_HABITACION (
     P_NUMERO        IN NUMBER,
     P_TIPO          IN VARCHAR2,
