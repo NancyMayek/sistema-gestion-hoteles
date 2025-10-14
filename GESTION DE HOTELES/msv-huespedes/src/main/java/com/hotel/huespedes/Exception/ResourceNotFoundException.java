@@ -1,4 +1,4 @@
-package com.guillermo.huespedes.Exception;
+package com.hotel.huespedes.Exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 	

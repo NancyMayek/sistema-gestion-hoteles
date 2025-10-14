@@ -1,10 +1,11 @@
-package com.guillermo.huespedes.mappers;
+package com.hotel.huespedes.mappers;
 
 import org.springframework.stereotype.Component;
-import com.guillermo.huespedes.models.Huesped;
+
 import com.hotel.commons.dto.HuespedRequest;
 import com.hotel.commons.dto.HuespedResponse;
 import com.hotel.commons.mappers.CommonMapper;
+import com.hotel.huespedes.models.Huesped;
 
 import lombok.AllArgsConstructor;
 

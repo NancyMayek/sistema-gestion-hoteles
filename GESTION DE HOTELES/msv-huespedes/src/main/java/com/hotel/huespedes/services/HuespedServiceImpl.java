@@ -1,4 +1,4 @@
-package com.guillermo.huespedes.services;
+package com.hotel.huespedes.services;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -6,11 +6,11 @@ import java.util.NoSuchElementException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.guillermo.huespedes.mappers.HuespedMapper;
-import com.guillermo.huespedes.models.Huesped;
-import com.guillermo.huespedes.repositories.HuespedRepository;
 import com.hotel.commons.dto.HuespedRequest;
 import com.hotel.commons.dto.HuespedResponse;
+import com.hotel.huespedes.mappers.HuespedMapper;
+import com.hotel.huespedes.models.Huesped;
+import com.hotel.huespedes.repositories.HuespedRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;

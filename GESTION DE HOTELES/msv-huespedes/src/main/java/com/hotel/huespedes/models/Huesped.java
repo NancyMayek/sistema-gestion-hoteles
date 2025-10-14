@@ -1,4 +1,4 @@
-package com.guillermo.huespedes.models;
+package com.hotel.huespedes.models;
 
 import jakarta.persistence.Column;
 

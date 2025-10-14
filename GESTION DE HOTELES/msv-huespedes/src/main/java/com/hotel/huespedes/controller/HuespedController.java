@@ -1,11 +1,11 @@
-package com.guillermo.huespedes.controller;
+package com.hotel.huespedes.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.guillermo.huespedes.services.HuespedService;
 import com.hotel.commons.controllers.CommonController;
 import com.hotel.commons.dto.HuespedRequest;
 import com.hotel.commons.dto.HuespedResponse;
+import com.hotel.huespedes.services.HuespedService;
 
 @RestController
 public class HuespedController extends CommonController<HuespedRequest, HuespedResponse, HuespedService>{
