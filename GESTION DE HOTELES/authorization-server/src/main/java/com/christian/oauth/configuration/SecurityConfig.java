@@ -1,4 +1,4 @@
-package com.mario.oauth.configuration;
+package com.christian.oauth.configuration;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -35,11 +35,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
-import com.mario.oauth.models.Rol;
-import com.mario.oauth.models.Usuario;
-import com.mario.oauth.repositories.RolRepository;
-import com.mario.oauth.repositories.UsuarioRepository;
-import com.mario.oauth.services.CustomUserDetails;
+import com.christian.oauth.models.Rol;
+import com.christian.oauth.models.Usuario;
+import com.christian.oauth.repositories.RolRepository;
+import com.christian.oauth.repositories.UsuarioRepository;
+import com.christian.oauth.services.CustomUserDetails;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -50,9 +50,9 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableWebSecurity
 public class SecurityConfig {
 	
-	@Bean 
+	@Bean
 	@Order(1)
-	 SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
 			throws Exception {
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
 				OAuth2AuthorizationServerConfigurer.authorizationServer();
@@ -79,30 +79,31 @@ public class SecurityConfig {
 		return http.build();
 	}
 	
-	@Bean 
+	@Bean
 	@Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 			throws Exception {
 		http
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/api/Login").permitAll()
+				.requestMatchers("/api/login").permitAll()
 				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			)
 			// Form login handles the redirect to the login page from the
 			// authorization server filter chain
-			/*.formLogin(Customizer.withDefaults());*/
+			//.formLogin(Customizer.withDefaults());
 			.csrf(csrf -> csrf.disable())
-			.oauth2ResourceServer(oauth2-> 
-			oauth2.jwt(jwt->jwt.jwtAuthenticationConverter(null)));
-		
-			return http.build();
+			.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+
+		return http.build();
 	}
+	
 	@Bean
-	PasswordEncoder passwordEncoder() {	
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	
+	@Bean
 	JwtAuthenticationConverter jwtAuthenticationConverter() {
 		JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 		grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
@@ -111,16 +112,14 @@ public class SecurityConfig {
 		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 		return jwtAuthenticationConverter;
-		
-		
 	}
 	
 	@Bean
-    UserDetailsService userDetailsService(CustomUserDetails customUserDetails) {
+	UserDetailsService userDetailsService(CustomUserDetails customUserDetails) {
 		return customUserDetails;
 	}
 	
-	@Bean 
+	@Bean
 	RegisteredClientRepository registeredClientRepository() {
 		RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("oidc-client")
@@ -151,8 +150,7 @@ public class SecurityConfig {
 		return new ImmutableJWKSet<>(jwkSet);
 	}
 	
-	
-	private static KeyPair generateRsaKey() { 
+	private static KeyPair generateRsaKey() {
 		KeyPair keyPair;
 		try {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -174,10 +172,8 @@ public class SecurityConfig {
 	AuthorizationServerSettings authorizationServerSettings() {
 		return AuthorizationServerSettings.builder().build();
 	}
-
-
-
-	/*@Bean
+	
+	@Bean
 	CommandLineRunner initData(UsuarioRepository userRepo, RolRepository rolRepo, PasswordEncoder encoder) {
 	    return args -> {
 	        Rol adminRole = rolRepo.findByNombre("ROLE_ADMIN")
@@ -209,10 +205,6 @@ public class SecurityConfig {
 	            userRepo.save(user);
 	        }
 	    };
-	}*/
-
+	}
 	
-	
-	
-
 }

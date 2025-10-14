@@ -1,4 +1,4 @@
-package com.mario.oauth.services;
+package com.christian.oauth.services;
 
 import java.util.stream.Collectors;
 
@@ -7,13 +7,18 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-import com.mario.oauth.models.Usuario;
-import com.mario.oauth.repositories.UsuarioRepository;
+import com.christian.oauth.models.Usuario;
+import com.christian.oauth.repositories.UsuarioRepository;
 
-public class CustomUserDetails implements UserDetailsService{
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
+public class CustomUserDetails implements UserDetailsService {
 	
-	private final UsuarioRepository usuarioRepository = null;
+	private final UsuarioRepository usuarioRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -23,15 +28,9 @@ public class CustomUserDetails implements UserDetailsService{
 		return new User(
 				usuario.getUsername(),
 				usuario.getPassword(),
-				usuario.getRoles()
-				.stream()
-				.map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+				usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
 				.collect(Collectors.toSet())
-	
-	);
-		}
-
-	
-	
+		);
+	}
 
 }

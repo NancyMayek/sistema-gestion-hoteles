@@ -1,4 +1,4 @@
-package com.mario.oauth.controllers;
+package com.christian.oauth.controllers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,51 +12,44 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mario.oauth.dto.LoginRequest;
-import com.mario.oauth.dto.UsuarioRequest;
-import com.mario.oauth.dto.UsuarioResponse;
-import com.mario.oauth.services.AuthService;
-import com.mario.oauth.services.UsuarioService;
+import com.christian.oauth.dto.LoginRequest;
+import com.christian.oauth.dto.UsuarioRequest;
+import com.christian.oauth.dto.UsuarioResponse;
+import com.christian.oauth.services.AuthService;
+import com.christian.oauth.services.UsuarioService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-
 public class AuthController {
-
+	
 	private final AuthService authService;
 	
 	private final UsuarioService usuarioService;
 	
 	@PostMapping("/api/login")
-	public ResponseEntity <Map<String, String>> authenticate(@Valid @RequestBody LoginRequest request)
-	throws Exception{
-		
+	public ResponseEntity<Map<String, String>> aunthenticate(@Valid @RequestBody LoginRequest request) throws Exception {
 		String token = authService.authenticate(request.username(), request.password());
 		Map<String, String> response = new HashMap<>();
 		response.put("token", token);
 		return ResponseEntity.ok(response);
-		
 	}
-	
 	
 	@GetMapping("/admin/usuarios")
 	public ResponseEntity<Set<UsuarioResponse>> listarUsuarios() {
-	    return ResponseEntity.ok(usuarioService.listarUsuarios());
+		return ResponseEntity.ok(usuarioService.listarUsuarios());
 	}
-
+	
 	@PostMapping("/admin/usuarios")
 	public ResponseEntity<UsuarioResponse> crearUsuario(@Valid @RequestBody UsuarioRequest request) {
-	    return ResponseEntity.ok(usuarioService.crearUsuario(request));
+		return ResponseEntity.ok(usuarioService.crearUsuario(request));
 	}
-
+	
 	@DeleteMapping("/admin/usuarios/{username}")
 	public ResponseEntity<UsuarioResponse> eliminarUsuario(@PathVariable String username) {
-	    return ResponseEntity.ok(usuarioService.eliminarUsuario(username));
+		return ResponseEntity.ok(usuarioService.eliminarUsuario(username));
 	}
-	
-	
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+
 }

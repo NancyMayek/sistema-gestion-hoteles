@@ -1,9 +1,9 @@
-package com.mario.oauth.services;
-
+package com.christian.oauth.services;
 
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,41 +23,50 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
+	
 	private final UserDetailsService userDetailsService;
+	
 	private final RSAKey rsaKey;
-	
-	
+
 	public AuthServiceImpl(UserDetailsService userDetailsService, JWKSource<SecurityContext> jwkSource) {
 		this.userDetailsService = userDetailsService;
-		
 		try {
-			JWKSelector jwkSelector=new JWKSelector(new JWKMatcher.Builder().keyType(KeyType.RSA).build());
+			JWKSelector jwkSelector = new JWKSelector(
+					new JWKMatcher.Builder().keyType(KeyType.RSA).build());
 			var jwks = jwkSource.get(jwkSelector, null);
-			if(jwks == null || jwks.isEmpty()) {
+			if (jwks == null || jwks.isEmpty()) {
 				throw new RuntimeException("No se pudo obtener la clave RSA");
 			}
-			rsaKey=(RSAKey) jwks.get(0); 
-		}catch (Exception e) {
+			rsaKey = (RSAKey) jwks.get(0);
+		} catch (Exception e) {
 			throw new RuntimeException("No se pudo obtener la clave RSA");
 		}
 	}
+
 	@Override
-	public String authenticate(String username, String password) throws Exception{
+	public String authenticate(String username, String password) throws Exception {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		if(userDetails == null || !new BCryptPasswordEncoder().matches(password, userDetails.getPassword())) {
+		if (userDetails == null || !new BCryptPasswordEncoder().matches(password, userDetails.getPassword())) {
 			throw new IllegalArgumentException("Credenciales inválidas");
 		}
-		Instant now = Instant.now();
-		JWTClaimsSet claimsSet = new JWTClaimsSet.Builder().issuer("http://localhost:9000").subject(userDetails.getUsername()).issueTime(Date.from(now))
-				.expirationTime(Date.from(now.plusSeconds(3600)))
-				.jwtID(UUID.randomUUID().toString()).claim("roles",  userDetails.getAuthorities().stream().map(authority->authority.getAuthority()).toList()).build();
 		
-		SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(rsaKey.getKeyID()).build(),claimsSet);
+		Instant now = Instant.now();
+		JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+				.issuer("http://localhost:9000")
+				.subject(userDetails.getUsername())
+				.issueTime(Date.from(now))
+				.expirationTime(Date.from(now.plusSeconds(3600)))
+				.jwtID(UUID.randomUUID().toString())
+				.claim("roles", userDetails.getAuthorities().stream().map(
+						authority -> authority.getAuthority())
+						.toList())
+				.build();
+		SignedJWT signedJWT = new SignedJWT(
+				new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(rsaKey.getKeyID()).build(),
+				claimsSet);
 		JWSSigner signer = new RSASSASigner(rsaKey.toPrivateKey());
 		signedJWT.sign(signer);
 		return signedJWT.serialize();
 	}
-	
-	
 }

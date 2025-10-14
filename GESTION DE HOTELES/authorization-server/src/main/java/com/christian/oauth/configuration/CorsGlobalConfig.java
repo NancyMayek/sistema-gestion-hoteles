@@ -1,5 +1,4 @@
-package com.mario.oauth.configuration;
-
+package com.christian.oauth.configuration;
 
 import java.util.List;
 
