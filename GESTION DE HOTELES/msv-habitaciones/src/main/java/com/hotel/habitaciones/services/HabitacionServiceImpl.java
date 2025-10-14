@@ -58,7 +58,7 @@ public class HabitacionServiceImpl implements HabitacionService{
 		Habitacion habitacion = getHabitacionOrThrow(id);
 		log.info("Actualizando la habitacion con id {}", id);
 		habitacion.setNumero(request.numero());
-		habitacion.setTipo(request.tipo());
+		habitacion.setIdtipo(request.idtipo());;
 		habitacion.setDescripcion(request.descripcion());
 		habitacion.setPrecio(request.precio());
 		habitacion.setCapacidad(request.capacidad());

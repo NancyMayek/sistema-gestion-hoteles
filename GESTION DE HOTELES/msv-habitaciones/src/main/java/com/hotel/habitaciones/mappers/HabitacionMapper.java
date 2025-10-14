@@ -15,12 +15,11 @@ public class HabitacionMapper extends CommonMapper<HabitacionRequest,HabitacionR
 
 	@Override
 	public HabitacionResponse entityToResponse(Habitacion entity) {
-		if(entity==null) return null;		
-		
+		if(entity==null) return null;			
 		return new HabitacionResponse(
 			entity.getId(),
 			entity.getNumero(),
-			entity.getTipo(),
+			entity.getIdtipo(),
 			entity.getDescripcion(),
 			entity.getPrecio(),
 			entity.getCapacidad(),
@@ -33,7 +32,7 @@ public class HabitacionMapper extends CommonMapper<HabitacionRequest,HabitacionR
 		if(request == null) return null;
 		Habitacion habitacion = new Habitacion();
 		habitacion.setNumero(request.numero());
-		habitacion.setTipo(request.tipo());
+		habitacion.setIdtipo(request.idtipo());
 		habitacion.setDescripcion(request.descripcion());
 		habitacion.setPrecio(request.precio());
 		habitacion.setCapacidad(request.capacidad());

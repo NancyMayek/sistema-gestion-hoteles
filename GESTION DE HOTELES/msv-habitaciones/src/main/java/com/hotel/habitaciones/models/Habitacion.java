@@ -36,10 +36,9 @@ public class Habitacion {
 	private Short numero;
 	
 	//Obligatorio
-	@NotBlank(message = "El tipo de habitacion es requerida ")
 	@NotNull(message="El tipo de  habitacion es requerida")
-	@Column(name= "TIPO", nullable = false)
-	private String tipo;
+	@Column(name= "TIPO")
+	private Long idtipo;
 	
 	@NotBlank(message = "La descripcion es requerida")
 	@Size(min = 1, max = 50, message = "La descripción debe tener entre 1 y 50 caracteres")
