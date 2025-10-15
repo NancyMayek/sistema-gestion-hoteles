@@ -36,7 +36,8 @@ public class Habitacion {
 	private Short numero;
 	
 	//Obligatorio
-	@NotNull(message="El tipo de  habitacion es requerida")
+	@Positive(message="El id de el tipo debe ser positivo")
+	@NotNull(message="El id del tipo de  habitacion es requerida")
 	@Column(name= "TIPO")
 	private Long idtipo;
 	
@@ -56,7 +57,7 @@ public class Habitacion {
 	@Column(name= "CAPACIDAD", nullable = false)
 	private Short capacidad;
 	
-	@Positive(message="La categoria debe ser positiva")
+	@Positive(message="El id de el estado debe ser positivo")
 	@Column(name = "ID_ESTADO")
 	private Long idEstado;
 }
