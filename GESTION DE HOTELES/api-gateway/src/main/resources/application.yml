@@ -19,7 +19,7 @@ spring:
         filters:
          - StripPrefix=2
 
-      - id: mmvs-reservas
+      - id: mvs-reservas
         uri: lb://mvs-reservas
         predicates:
          - Path=/api/reservas/**
