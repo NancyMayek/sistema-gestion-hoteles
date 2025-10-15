@@ -1,7 +1,13 @@
 package com.hotel.reservas.models;
 
 import jakarta.persistence.*;
+<<<<<<< HEAD
 import jakarta.validation.constraints.NotNull;
+=======
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+>>>>>>> ec5e25c65c39623364a59f5b23f958f0171a875d
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +27,7 @@ public class Reserva {
     @Column(name = "ID_RESERVA")
     private Long id;
 
+<<<<<<< HEAD
 	@NotNull(message = "El huesed es requerido")
     @Column(nullable = false)
     private String huesped;
@@ -99,4 +106,34 @@ public class Reserva {
                fechaEntrada.isBefore(fechaSalida) &&
                !fechaEntrada.isBefore(LocalDate.now());
     }
+=======
+    @NotBlank(message = "El huésped es requerido")
+    @Column(name = "HUESPED", nullable = false)
+    private String huesped;
+
+    @NotNull(message = "La habitación es requerida")
+    @Column(name = "HABITACION_ID", nullable = false)
+    private Long idHabitacion;
+
+    @NotNull(message = "La fecha de entrada es requerida")
+    @Column(name = "FECHA_ENTRADA", nullable = false)
+    private LocalDate fechaEntrada;
+
+    @NotNull(message = "La fecha de salida es requerida")
+    @Column(name = "FECHA_SALIDA", nullable = false)
+    private LocalDate fechaSalida;
+
+    @Column(name = "NOCHES")
+    private Integer noches;
+
+    @Positive(message = "El total debe de ser positivo")
+    @Column(name = "TOTAL", nullable = false)
+    private Double total;
+
+    @Positive(message="La categoria debe ser positiva")
+	@Column(name = "ID_ESTADO")
+	private Long idEstado;
+
+
+>>>>>>> ec5e25c65c39623364a59f5b23f958f0171a875d
 }
