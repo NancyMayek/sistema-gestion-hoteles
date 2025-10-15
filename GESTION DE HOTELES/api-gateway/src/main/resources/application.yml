@@ -16,8 +16,8 @@ spring:
    server:
     webflux:
      routes:
-      - id: msv-habitaciones
-        uri: lb://msv-habitaciones
+      - id: mvs-habitaciones
+        uri: lb://mvs-habitaciones
         predicates:
          - Path=/api/habitaciones/**
         filters:

@@ -11,7 +11,6 @@
 	import com.mario.oauth.dto.UsuarioResponse;
 	import com.mario.oauth.models.Rol;
 	import com.mario.oauth.models.Usuario;
-	import com.mario.oauth.repositories.RolRepository;
 	import com.mario.oauth.repositories.UsuarioRepository;
 	
 	import lombok.AllArgsConstructor;
@@ -22,7 +21,6 @@
 	public class UsuarioServiceImpl implements UsuarioService {
 
 	    private final UsuarioRepository usuarioRepository;
-	    private final RolRepository rolRepository;
 	    private final PasswordEncoder passwordEncoder;
 
 	    @Override
@@ -43,14 +41,12 @@
 	            throw new IllegalArgumentException("El usuario " + request.username() + " ya está registrado");
 	        }
 
-	       /* Set<Rol> roles = request.roles().stream().map(rol -> rolRepository.findByNombre(rol)
-		            .orElseThrow(() -> new NoSuchElementException("Rol " + rol + " no encontrado")))
-		        .collect(Collectors.toSet());*/
+	      
 
 	        Usuario usuario = new Usuario();
 	        usuario.setUsername(request.username());
 	        usuario.setPassword(passwordEncoder.encode(request.password()));
-	        //usuario.setRoles(roles);
+	     
 
 	        Usuario saved = usuarioRepository.save(usuario);
 

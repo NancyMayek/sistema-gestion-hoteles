@@ -4,10 +4,8 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -35,10 +33,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
-import com.mario.oauth.models.Rol;
-import com.mario.oauth.models.Usuario;
-import com.mario.oauth.repositories.RolRepository;
-import com.mario.oauth.repositories.UsuarioRepository;
 import com.mario.oauth.services.CustomUserDetails;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -50,9 +44,9 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableWebSecurity
 public class SecurityConfig {
 	
-	@Bean 
+	@Bean
 	@Order(1)
-	 SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
 			throws Exception {
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
 				OAuth2AuthorizationServerConfigurer.authorizationServer();
@@ -67,8 +61,7 @@ public class SecurityConfig {
 				authorize
 					.anyRequest().authenticated()
 			)
-			// Redirect to the login page when not authenticated from the
-			// authorization endpoint
+			
 			.exceptionHandling((exceptions) -> exceptions
 				.defaultAuthenticationEntryPointFor(
 					new LoginUrlAuthenticationEntryPoint("/login"),
@@ -79,30 +72,31 @@ public class SecurityConfig {
 		return http.build();
 	}
 	
-	@Bean 
+	@Bean
 	@Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 			throws Exception {
 		http
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/api/Login").permitAll()
+				.requestMatchers("/api/login").permitAll()
 				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			)
 			// Form login handles the redirect to the login page from the
 			// authorization server filter chain
-			/*.formLogin(Customizer.withDefaults());*/
+			//.formLogin(Customizer.withDefaults());
 			.csrf(csrf -> csrf.disable())
-			.oauth2ResourceServer(oauth2-> 
-			oauth2.jwt(jwt->jwt.jwtAuthenticationConverter(null)));
-		
-			return http.build();
+			.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+
+		return http.build();
 	}
+	
 	@Bean
-	PasswordEncoder passwordEncoder() {	
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	
+	@Bean
 	JwtAuthenticationConverter jwtAuthenticationConverter() {
 		JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 		grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
@@ -111,16 +105,14 @@ public class SecurityConfig {
 		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 		return jwtAuthenticationConverter;
-		
-		
 	}
 	
 	@Bean
-    UserDetailsService userDetailsService(CustomUserDetails customUserDetails) {
+	UserDetailsService userDetailsService(CustomUserDetails customUserDetails) {
 		return customUserDetails;
 	}
 	
-	@Bean 
+	@Bean
 	RegisteredClientRepository registeredClientRepository() {
 		RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("oidc-client")
@@ -151,8 +143,7 @@ public class SecurityConfig {
 		return new ImmutableJWKSet<>(jwkSet);
 	}
 	
-	
-	private static KeyPair generateRsaKey() { 
+	private static KeyPair generateRsaKey() {
 		KeyPair keyPair;
 		try {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -174,45 +165,5 @@ public class SecurityConfig {
 	AuthorizationServerSettings authorizationServerSettings() {
 		return AuthorizationServerSettings.builder().build();
 	}
-
-
-
-	/*@Bean
-	CommandLineRunner initData(UsuarioRepository userRepo, RolRepository rolRepo, PasswordEncoder encoder) {
-	    return args -> {
-	        Rol adminRole = rolRepo.findByNombre("ROLE_ADMIN")
-	                .orElseGet(() -> {
-	                	Rol r = new Rol();
-	                    r.setNombre("ROLE_ADMIN");
-	                    return rolRepo.save(r);
-	                });
-	        Rol userRole = rolRepo.findByNombre("ROLE_USER")
-	                .orElseGet(() -> {
-	                	Rol r = new Rol();
-	                    r.setNombre("ROLE_USER");
-	                    return rolRepo.save(r);
-	                });
-
-	        if (userRepo.findByUsername("admin").isEmpty()) {
-	            Usuario admin = new Usuario();
-	            admin.setUsername("admin");
-	            admin.setPassword(encoder.encode("admin"));
-	            admin.setRoles(Set.of(adminRole));
-	            userRepo.save(admin);
-	        }
-	        
-	        if (userRepo.findByUsername("usuario").isEmpty()) {
-	        	Usuario user = new Usuario();
-	            user.setUsername("usuario");
-	            user.setPassword(encoder.encode("usuario"));
-	            user.setRoles(Set.of(userRole));
-	            userRepo.save(user);
-	        }
-	    };
-	}*/
-
 	
-	
-	
-
 }
