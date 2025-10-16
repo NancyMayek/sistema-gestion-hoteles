@@ -16,22 +16,22 @@ spring:
    server:
     webflux:
      routes:
-      - id: mvs-habitaciones
-        uri: lb://mvs-habitaciones
+      - id: msv-habitaciones
+        uri: lb://msv-habitaciones
         predicates:
          - Path=/api/habitaciones/**
         filters:
          - StripPrefix=2
 
-      - id: mvs-reservas
-        uri: lb://mvs-reservas
+      - id: msv-reservas
+        uri: lb://msv-reservas
         predicates:
          - Path=/api/reservas/**
         filters:
          - StripPrefix=2
 
-      - id: mvs-huespedes
-        uri: lb://mvs-huespedes
+      - id: msv-huespedes
+        uri: lb://msv-huespedes
         predicates:
          - Path=/api/huespedes/**
         filters:

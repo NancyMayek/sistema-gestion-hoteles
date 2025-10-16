@@ -1,6 +1,6 @@
 package com.hotel.commons.dto;
 
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 public record ReservaRequest(
     
-		@NotBlank(message = "El huésped es requerido")
-	    String huesped,
+		@NotNull(message = "El huésped es requerido")
+	    Long idHuesped,
 
 	    @NotNull(message = "La habitación es requerida")
 	     Long idHabitacion,

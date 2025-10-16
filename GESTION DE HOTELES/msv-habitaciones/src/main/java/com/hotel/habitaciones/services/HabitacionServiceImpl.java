@@ -6,8 +6,10 @@ import java.util.NoSuchElementException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.hotel.commons.clients.ReservaClient;
 import com.hotel.commons.dto.HabitacionRequest;
 import com.hotel.commons.dto.HabitacionResponse;
+import com.hotel.commons.exceptions.EntidadRelacionadaException;
 import com.hotel.habitaciones.mappers.HabitacionMapper;
 import com.hotel.habitaciones.models.Habitacion;
 import com.hotel.habitaciones.repositories.HabitacionRepository;
@@ -24,6 +26,7 @@ public class HabitacionServiceImpl implements HabitacionService{
 
 	private final HabitacionRepository habitacionRepository;
 	private final HabitacionMapper habitacionMapper;
+	private final ReservaClient reservaClient;
 	
 	@Override
 	public List<HabitacionResponse> listar() {
@@ -72,6 +75,9 @@ public class HabitacionServiceImpl implements HabitacionService{
 	public void eliminar(Long id) {
 		log.info("Eliminando Habitacion con id {}", id);
 		Habitacion habitacion = getHabitacionOrThrow(id);
+		if (reservaClient.habitacionPresente(id)) {
+			throw new EntidadRelacionadaException("La Habitacion está referenciada en una reserva y no puede eliminarse");
+		}
 		habitacionRepository.delete(habitacion);
 		log.info("Numero de Habitacion eliminada: {}", habitacion.getNumero());
 	}

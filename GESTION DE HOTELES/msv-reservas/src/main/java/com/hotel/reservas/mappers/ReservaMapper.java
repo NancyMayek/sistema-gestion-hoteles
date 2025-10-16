@@ -20,7 +20,7 @@ public class ReservaMapper extends CommonMapper<ReservaRequest, ReservaResponse,
 
         return new ReservaResponse (
                 entity.getId(),
-                entity.getHuesped(),
+                entity.getIdHuesped(),
                 entity.getIdHabitacion(),
                 entity.getFechaEntrada(),
                 entity.getFechaSalida(),
@@ -35,7 +35,7 @@ public class ReservaMapper extends CommonMapper<ReservaRequest, ReservaResponse,
         if (request == null) return null;
 
         Reserva reserva = new Reserva();
-        reserva.setHuesped(request.huesped());
+        reserva.setIdHuesped(request.idHuesped());
         reserva.setIdHabitacion(request.idHabitacion());
         reserva.setFechaEntrada(request.fechaEntrada());
         reserva.setFechaSalida(request.fechaSalida());

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record ReservaResponse(
     Long id,
-    String huesped,
+    Long idHuesped,
     Long idHabitacion,
     LocalDate fechaEntrada,
     LocalDate fechaSalida,
