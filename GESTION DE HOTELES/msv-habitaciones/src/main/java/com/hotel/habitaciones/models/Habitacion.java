@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,10 +37,10 @@ public class Habitacion {
 	private Short numero;
 	
 	//Obligatorio
-	@Positive(message="El id de el tipo debe ser positivo")
-	@NotNull(message="El id del tipo de  habitacion es requerida")
-	@Column(name= "TIPO")
-	private Long idtipo;
+
+	@NotBlank(message="El id del tipo de  habitacion es requerida")
+	@Column(name= "TIPO", nullable = false)
+	private String tipo;
 	
 	@NotBlank(message = "La descripcion es requerida")
 	@Size(min = 1, max = 50, message = "La descripción debe tener entre 1 y 50 caracteres")
@@ -57,7 +58,8 @@ public class Habitacion {
 	@Column(name= "CAPACIDAD", nullable = false)
 	private Short capacidad;
 	
-	@Positive(message="El id de el estado debe ser positivo")
+	@Min(value = 1, message = "El estado no existe")
+	@Max(value = 4, message = "El estado no existe")
 	@Column(name = "ID_ESTADO")
 	private Long idEstado;
 }

@@ -47,6 +47,7 @@ public class HabitacionServiceImpl implements HabitacionService{
 			 throw new DataIntegrityViolationException("Ya existe una habitación con el número: " + request.numero());
 	        }
 		
+		
 		return habitacionMapper.entityToResponse(
 				habitacionRepository.save(habitacionMapper.requestToEntity(request))
 		);
@@ -58,7 +59,7 @@ public class HabitacionServiceImpl implements HabitacionService{
 		Habitacion habitacion = getHabitacionOrThrow(id);
 		log.info("Actualizando la habitacion con id {}", id);
 		habitacion.setNumero(request.numero());
-		habitacion.setIdtipo(request.idtipo());;
+		habitacion.setTipo(request.tipo());;
 		habitacion.setDescripcion(request.descripcion());
 		habitacion.setPrecio(request.precio());
 		habitacion.setCapacidad(request.capacidad());
@@ -80,5 +81,7 @@ public class HabitacionServiceImpl implements HabitacionService{
             new NoSuchElementException("Habitacion no encontrado con el id: " + id)
         );
     }
+	
+
 
 }

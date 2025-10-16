@@ -19,7 +19,7 @@ public class HabitacionMapper extends CommonMapper<HabitacionRequest,HabitacionR
 		return new HabitacionResponse(
 			entity.getId(),
 			entity.getNumero(),
-			entity.getIdtipo(),
+			entity.getTipo(),
 			entity.getDescripcion(),
 			entity.getPrecio(),
 			entity.getCapacidad(),
@@ -32,7 +32,7 @@ public class HabitacionMapper extends CommonMapper<HabitacionRequest,HabitacionR
 		if(request == null) return null;
 		Habitacion habitacion = new Habitacion();
 		habitacion.setNumero(request.numero());
-		habitacion.setIdtipo(request.idtipo());
+		habitacion.setTipo(request.tipo());
 		habitacion.setDescripcion(request.descripcion());
 		habitacion.setPrecio(request.precio());
 		habitacion.setCapacidad(request.capacidad());
