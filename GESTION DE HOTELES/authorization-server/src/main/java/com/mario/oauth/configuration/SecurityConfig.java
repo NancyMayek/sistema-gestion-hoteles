@@ -205,6 +205,13 @@ public class SecurityConfig {
 	            user.setRoles(Set.of(userRole));
 	            userRepo.save(user);
 	        }
+	        if (userRepo.findByUsername("recepcion").isEmpty()) {
+	            Usuario user = new Usuario();
+	            user.setUsername("recepcion");
+	            user.setPassword(encoder.encode("recepcion"));
+	            user.setRoles(Set.of(userRole));
+	            userRepo.save(user);
+	        }
 	    };
 	}
 	

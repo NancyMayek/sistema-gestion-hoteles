@@ -24,8 +24,9 @@ public class SecurityConfig {
 					configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 					configuration.setAllowCredentials(true);
 					return configuration;
-				})).authorizeExchange(exchange -> exchange /*
-						.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+				})).authorizeExchange(exchange -> exchange
+						/*.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.pathMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "USER")
 						.pathMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN", "USER")
 						.pathMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
