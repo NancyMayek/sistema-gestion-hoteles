@@ -24,13 +24,13 @@ public class SecurityConfig {
 					configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 					configuration.setAllowCredentials(true);
 					return configuration;
-				})).authorizeExchange(exchange -> exchange
+				})).authorizeExchange(exchange -> exchange /*
 						.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.pathMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "USER")
 						.pathMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN", "USER")
 						.pathMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-						.pathMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
-						.anyExchange().authenticated())
+						.pathMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")*/
+						.anyExchange().permitAll())
 				.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
 					jwt.jwtAuthenticationConverter(reactiveJwtAuthenticationConverterAdapter())));
 		return http.build();
