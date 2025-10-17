@@ -1,11 +1,14 @@
 package com.hotel.reservas.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hotel.commons.clients.HabitacionClient;
+import com.hotel.commons.clients.HuespedClient;
 import com.hotel.commons.dto.ReservaRequest;
 import com.hotel.commons.dto.ReservaResponse;
 import com.hotel.reservas.mappers.ReservaMapper;
@@ -23,7 +26,8 @@ public class ReservaServiceImpl implements ReservaServices {
 
     private final ReservaRepository reservaRepository;
     private final ReservaMapper reservaMapper;
-
+    private final HuespedClient huespedClient;
+    private final HabitacionClient habitacionClient;
     
     @Override
     @Transactional(readOnly = true)
@@ -62,16 +66,38 @@ public class ReservaServiceImpl implements ReservaServices {
 		Reserva reserva = getReservaOrThrow(id);
 		log.info("Actualizando Proveedor con id {}", id);
 		
+		//Validamos si existen huespedes y habitacion
+		if(huespedClient.obtenerHuespedPorId(request.idHuesped()) == null) {
+			throw new NoSuchElementException("No existe el Huesped con id" + request.idHuesped());
+		}
 		reserva.setIdHuesped(request.idHuesped());
-		reserva.setIdHabitacion(request.idHabitacion());       
+		
+		if(habitacionClient.obtenerHabitacionPorId(request.idHabitacion()) == null) {
+			throw new NoSuchElementException("No existe el Habitacion con id" + request.idHabitacion());
+		}
+		reserva.setIdHabitacion(request.idHabitacion());  
+		
+		//Validamos fechas
+		LocalDate hoy = LocalDate.now();
+		 if (request.fechaEntrada().isBefore(hoy)) {
+		        throw new IllegalArgumentException("La fecha de entrada debe ser hoy o una fecha futura.");
+		 }
+		
+		 if (!request.fechaSalida().isAfter(request.fechaEntrada()) || request.fechaSalida().isBefore(request.fechaEntrada())) {
+		        throw new IllegalArgumentException("La fecha de salida debe ser posterior a la fecha de entrada.");
+		 }
 		reserva.setFechaEntrada(request.fechaEntrada());
 		reserva.setFechaSalida(request.fechaSalida());
+		
 		reserva.setNoches(request.noches());
-	    reserva.setTotal(request.total());
+		
+		//Calculamos total
+		Double precioHabitacion = habitacionClient.obtenerHabitacionPorId(request.idHabitacion()).precio();
+		Double total = precioHabitacion * request.noches();
+	    reserva.setTotal(total);
+	    
 	    reserva.setIdEstado(request.idEstado());
 	        
-
-
 		return reservaMapper.entityToResponse(reservaRepository.save(reserva));
         }
 
@@ -93,7 +119,6 @@ public class ReservaServiceImpl implements ReservaServices {
 	public boolean huespedPresente(Long id) {
 		return reservaRepository.existsByIdHuesped(id);
 	}
-
 
 }
 

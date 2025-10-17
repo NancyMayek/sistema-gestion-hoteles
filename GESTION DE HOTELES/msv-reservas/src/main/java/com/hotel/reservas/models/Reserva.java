@@ -24,7 +24,7 @@ public class Reserva {
     private Long id;
 
     @NotNull(message = "El huésped es requerido")
-    @Column(name = "HUESPED", nullable = false)
+    @Column(name = "HUESPED_ID", nullable = false)
     private Long idHuesped;
 
     @NotNull(message = "La habitación es requerida")
