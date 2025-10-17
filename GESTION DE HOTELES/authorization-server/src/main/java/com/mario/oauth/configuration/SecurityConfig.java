@@ -4,8 +4,10 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -33,6 +35,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
+import com.mario.oauth.models.Rol;
+import com.mario.oauth.models.Usuario;
+import com.mario.oauth.repositories.RolRepository;
+import com.mario.oauth.repositories.UsuarioRepository;
 import com.mario.oauth.services.CustomUserDetails;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -44,6 +50,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableWebSecurity
 public class SecurityConfig {
 	
+
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
@@ -61,7 +68,8 @@ public class SecurityConfig {
 				authorize
 					.anyRequest().authenticated()
 			)
-			
+			// Redirect to the login page when not authenticated from the
+			// authorization endpoint
 			.exceptionHandling((exceptions) -> exceptions
 				.defaultAuthenticationEntryPointFor(
 					new LoginUrlAuthenticationEntryPoint("/login"),
@@ -164,6 +172,40 @@ public class SecurityConfig {
 	@Bean 
 	AuthorizationServerSettings authorizationServerSettings() {
 		return AuthorizationServerSettings.builder().build();
+	}
+	
+	@Bean
+	CommandLineRunner initData(UsuarioRepository userRepo, RolRepository rolRepo, PasswordEncoder encoder) {
+	    return args -> {
+	        Rol adminRole = rolRepo.findByNombre("ROLE_ADMIN")
+	                .orElseGet(() -> {
+	                	Rol r = new Rol();
+	                    r.setNombre("ROLE_ADMIN");
+	                    return rolRepo.save(r);
+	                });
+	        Rol userRole = rolRepo.findByNombre("ROLE_USER")
+	                .orElseGet(() -> {
+	                	Rol r = new Rol();
+	                    r.setNombre("ROLE_USER");
+	                    return rolRepo.save(r);
+	                });
+
+	        if (userRepo.findByUsername("admin").isEmpty()) {
+	            Usuario admin = new Usuario();
+	            admin.setUsername("admin");
+	            admin.setPassword(encoder.encode("admin"));
+	            admin.setRoles(Set.of(adminRole));
+	            userRepo.save(admin);
+	        }
+	        
+	        if (userRepo.findByUsername("usuario").isEmpty()) {
+	        	Usuario user = new Usuario();
+	            user.setUsername("usuario");
+	            user.setPassword(encoder.encode("usuario"));
+	            user.setRoles(Set.of(userRole));
+	            userRepo.save(user);
+	        }
+	    };
 	}
 	
 }
