@@ -1,5 +1,7 @@
 package com.hotel.reservas.mappers;
 
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.stereotype.Component;
 
 import com.hotel.commons.clients.HabitacionClient;
@@ -24,14 +26,26 @@ public class ReservaMapper extends CommonMapper<ReservaRequest, ReservaResponse,
        
         HabitacionResponse habitacion =  habitacionClient.obtenerHabitacionPorId(entity.getIdHabitacion());
         HuespedResponse huesped = huespedClient.obtenerHuespedPorId(entity.getIdHuesped());
+        
+        
+      //Calcular noches
+		
+		Integer noches = (int) ChronoUnit.DAYS.between(entity.getFechaEntrada(), entity.getFechaSalida());
+        
+      //Calculamos total
+  		Double total = habitacion.precio() * noches;
+ 
+  			
+  			
+        
         return new ReservaResponse (
                 entity.getId(),
                 huesped,
                 habitacion,
                 entity.getFechaEntrada(),
                 entity.getFechaSalida(),
-                entity.getNoches(),
-                entity.getTotal(),
+                noches,
+                total,
                 entity.getIdEstado()
         );
     }

@@ -43,7 +43,7 @@ public class Reserva {
     private Integer noches;
 
     @Positive(message = "El total debe de ser positivo")
-    @Column(name = "TOTAL", nullable = false)
+    @Column(name = "TOTAL", nullable = true)
     private Double total;
 
     @Positive(message="La categoria debe ser positiva")

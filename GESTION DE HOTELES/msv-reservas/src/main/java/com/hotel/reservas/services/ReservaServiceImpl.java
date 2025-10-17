@@ -1,6 +1,7 @@
 package com.hotel.reservas.services;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -55,6 +56,8 @@ public class ReservaServiceImpl implements ReservaServices {
 	@Override
     public ReservaResponse insertar(ReservaRequest request) {
         log.info("Insertando nueva reserva para huésped: {}", request.idHuesped());
+        
+      
 		return reservaMapper.entityToResponse(
 		reservaRepository.save(reservaMapper.requestToEntity(request)));
        
@@ -64,7 +67,7 @@ public class ReservaServiceImpl implements ReservaServices {
     public ReservaResponse actualizar(ReservaRequest request, Long id) {
     	log.info("Buscando Reserva con id {}", id);
 		Reserva reserva = getReservaOrThrow(id);
-		log.info("Actualizando Proveedor con id {}", id);
+		log.info("Actualizando Reserva con id {}", id);
 		
 		//Validamos si existen huespedes y habitacion
 		if(huespedClient.obtenerHuespedPorId(request.idHuesped()) == null) {
@@ -89,7 +92,9 @@ public class ReservaServiceImpl implements ReservaServices {
 		reserva.setFechaEntrada(request.fechaEntrada());
 		reserva.setFechaSalida(request.fechaSalida());
 		
-		reserva.setNoches(request.noches());
+		//Calcular noches
+		Integer noches = (int) ChronoUnit.DAYS.between(request.fechaEntrada(), request.fechaSalida());
+		reserva.setNoches(noches);
 		
 		//Calculamos total
 		Double precioHabitacion = habitacionClient.obtenerHabitacionPorId(request.idHabitacion()).precio();
