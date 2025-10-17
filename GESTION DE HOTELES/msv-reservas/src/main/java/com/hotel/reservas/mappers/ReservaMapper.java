@@ -2,6 +2,10 @@ package com.hotel.reservas.mappers;
 
 import org.springframework.stereotype.Component;
 
+import com.hotel.commons.clients.HabitacionClient;
+import com.hotel.commons.clients.HuespedClient;
+import com.hotel.commons.dto.HabitacionResponse;
+import com.hotel.commons.dto.HuespedResponse;
 import com.hotel.commons.dto.ReservaRequest;
 import com.hotel.commons.dto.ReservaResponse;
 import com.hotel.commons.mappers.CommonMapper;
@@ -12,16 +16,18 @@ import lombok.AllArgsConstructor;
 @Component
 @AllArgsConstructor
 public class ReservaMapper extends CommonMapper<ReservaRequest, ReservaResponse, Reserva> {
-
+	private final HabitacionClient habitacionClient; 
+	private final HuespedClient  huespedClient;
     @Override
     public ReservaResponse entityToResponse(Reserva entity) {
         if (entity == null) return null;
-        
-
+       
+        HabitacionResponse habitacion =  habitacionClient.obtenerHabitacionPorId(entity.getIdHabitacion());
+        HuespedResponse huesped = huespedClient.obtenerHuespedPorId(entity.getIdHuesped());
         return new ReservaResponse (
                 entity.getId(),
-                entity.getIdHuesped(),
-                entity.getIdHabitacion(),
+                huesped,
+                habitacion,
                 entity.getFechaEntrada(),
                 entity.getFechaSalida(),
                 entity.getNoches(),

@@ -6,8 +6,10 @@ import java.util.NoSuchElementException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.hotel.commons.clients.ReservaClient;
 import com.hotel.commons.dto.HuespedRequest;
 import com.hotel.commons.dto.HuespedResponse;
+import com.hotel.commons.exceptions.EntidadRelacionadaException;
 import com.hotel.huespedes.mappers.HuespedMapper;
 import com.hotel.huespedes.models.Huesped;
 import com.hotel.huespedes.repositories.HuespedRepository;
@@ -24,6 +26,7 @@ public class HuespedServiceImpl implements HuespedService{
 	
 	private final HuespedRepository huespedRepository;
 	private final HuespedMapper huespedMapper;
+	private final ReservaClient reservaClient;
 	
 	@Override
 	public List<HuespedResponse> listar() {
@@ -75,6 +78,7 @@ public class HuespedServiceImpl implements HuespedService{
 	public void eliminar(Long id) {
 		log.info("Eliminando Huesped con id {}", id);
 		Huesped huesped = getHuespedOrThrow(id);
+		
 		huespedRepository.delete(huesped);
 		log.info("Numero de Huesped eliminada: {}", huesped.getNombre());
 	}

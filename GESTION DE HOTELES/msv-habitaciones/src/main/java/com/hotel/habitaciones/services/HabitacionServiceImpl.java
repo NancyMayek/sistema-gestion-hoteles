@@ -49,6 +49,11 @@ public class HabitacionServiceImpl implements HabitacionService{
 		 if (habitacionRepository.existsByNumero(request.numero())) {
 			 throw new DataIntegrityViolationException("Ya existe una habitación con el número: " + request.numero());
 	        }
+		 
+		 //Si el usuario puso el id 2 de Ocupado entonces no tiene sentido que es una nueva habitacion y que ya este ocupado
+		 if(request.idEstado() == 2) {
+			 throw new DataIntegrityViolationException("El estado de una habitacion nueva no puede ser ocupado");
+		 }
 		
 		
 		return habitacionMapper.entityToResponse(
@@ -66,8 +71,7 @@ public class HabitacionServiceImpl implements HabitacionService{
 		habitacion.setDescripcion(request.descripcion());
 		habitacion.setPrecio(request.precio());
 		habitacion.setCapacidad(request.capacidad());
-		habitacion.setIdEstado(request.idEstado());;
-		
+		habitacion.setIdEstado(request.idEstado());
 		return habitacionMapper.entityToResponse(habitacionRepository.save(habitacion));
 	}
 
@@ -88,6 +92,17 @@ public class HabitacionServiceImpl implements HabitacionService{
         );
     }
 	
-
+	public boolean validarEstado(Long idEstadoPasado, Long idEstadoActualizar) {
+		//VALIDAR ESTADOS
+		
+				//Si es el estado es DISPONIBLE
+				if(idEstadoPasado == 1  ) {
+					return true; //con Disponible se pueden acceder a todos los estados
+				}
+				
+				
+				
+				return false;
+	}
 
 }

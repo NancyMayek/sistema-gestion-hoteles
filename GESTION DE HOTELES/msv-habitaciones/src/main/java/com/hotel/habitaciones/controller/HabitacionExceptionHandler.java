@@ -20,5 +20,5 @@ public class HabitacionExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
         		.body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage()));
     }
-    // Puedes agregar más excepciones específicas de habitaciones aquí
+    
 }
